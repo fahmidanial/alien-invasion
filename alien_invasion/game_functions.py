@@ -47,6 +47,9 @@ def check_play_button(ai_settings, screen, stats, play_button, ship, aliens, bul
     """ Start a new game when the player clicks Play. """
     button_clicked = play_button.rect.collidepoint(mouse_x, mouse_y)
     if button_clicked and not stats.game_active:
+        # Reset the game settings.
+        ai_settings.initialize_dynamic_settings()
+        
         # Hide the mouse cursor.
         pygame.mouse.set_visible(False)
         
@@ -95,8 +98,9 @@ def check_bullet_alien_collisions(ai_settings, screen, ship, aliens, bullets):
     # Remove any bullets and aliens that have collided.
     collisions = pygame.sprite.groupcollide(bullets, aliens, True, True)    
     if len(aliens) == 0:
-        # Destroy existing bullets and create new fleet.
+        # Destroy existing bullets, speed up game, and create new fleet.
         bullets.empty()
+        ai_settings.increase_speed()
         create_fleet(ai_settings, screen, ship, aliens)
         
 def ship_hit(ai_settings, stats, screen, ship, aliens, bullets):
@@ -118,6 +122,7 @@ def ship_hit(ai_settings, stats, screen, ship, aliens, bullets):
     
     else:
         stats.game_active = False
+        pygame.mouse.set_visible(True)
     
 def check_aliens_bottom(ai_settings, stats, screen, ship, aliens, bullets):
     """ Check if any aliens have reached the bottom of the screen. """
